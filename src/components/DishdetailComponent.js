@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Card, CardImg, CardText, CardBody,
-    CardTitle, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody,Form, FormGroup, Input, Label, Row, Col } from 'reactstrap';
+    CardTitle, Breadcrumb, BreadcrumbItem, Button, Modal, ModalHeader, ModalBody,Label, Row, Col } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 
@@ -26,9 +26,8 @@ class CommentForm extends Component
         });
       }
       handleSubmit(values) {
-        console.log('Current State is: ' + JSON.stringify(values));
-        alert('Current State is: ' + JSON.stringify(values));
-        // event.preventDefault();
+        this.toggleModal();
+        this.props.addComment(this.props.dishId, values.rating, values.author, values.comment)
     }
   
 render()
@@ -119,22 +118,28 @@ function RenderDish(dishDetail) {
   );
 }
 
-function RenderComments(comments) {
-  return comments.comments.map((comment, i) => (
-    <li key={i} className="commentList">
-      {comment.comment}
-      <br />
-      <br />
-      -- {comment.author},
-      {new Intl.DateTimeFormat("en-US", {
-        year: "numeric",
-        month: "short",
-        day: "2-digit"
-      }).format(new Date(Date.parse(comment.date)))}
-      <br />
-      <br />
-    </li>
-  ));
+function RenderComments({ comments, addComment, dishId }) {
+  if (comments != null) {
+    return (
+      <div className="col-12 col-md-5 m-1">
+        <h4>Comments</h4>
+        {comments.map(comment => (
+          <ul key={comment.id} className="list-unstyled">
+            <li className="mb-2">{comment.comment}</li>
+            <li>
+              -- {comment.author}{" "}
+              {new Intl.DateTimeFormat("en-US", {
+                year: "numeric",
+                month: "short",
+                day: "2-digit"
+              }).format(new Date(Date.parse(comment.date)))}
+            </li>
+          </ul>
+        ))}
+        <CommentForm addComment={addComment} dishId={dishId} />
+      </div>
+    );
+  } else return <div />;
 }
 
 const Dishdetail = props => {
@@ -157,8 +162,9 @@ const Dishdetail = props => {
           <RenderDish {...props.dish} />
         </div>
         <div className="col-12 col-md-5 m-1">
-          <RenderComments comments={props.comments} />
-          <CommentForm />
+          <RenderComments comments={props.comments} 
+            addComment={props.addComment}
+            dishId={props.dish.id} />
         </div>
       </div>
     </div>
