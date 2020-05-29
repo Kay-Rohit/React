@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import { Control, LocalForm, Errors } from 'react-redux-form';
 import {Loading} from './LoadingComponent';
 import {baseUrl} from '../shared/baseUrl';
+import {FadeTransform, Fade, Stagger} from 'react-animation-components';
 
 const required = (val) => val && val.length;
 const maxLength = (len) => (val) => !(val) || (val.length <= len);
@@ -110,6 +111,10 @@ render()
 
 function RenderDish(dishDetail) {
   return (
+    <FadeTransform in 
+    transformProps={{
+        exitTransform: 'scale(0.5) translateY(-50%)'
+    }}>
     <Card>
       <CardImg top src={baseUrl + dishDetail.image} alt={dishDetail.name} />
       <CardBody>
@@ -117,6 +122,7 @@ function RenderDish(dishDetail) {
         <CardText>{dishDetail.description}</CardText>
       </CardBody>
     </Card>
+    </FadeTransform>
   );
 }
 
@@ -125,6 +131,7 @@ function RenderComments({ comments, postComment, dishId }) {
     return (
       <div className="col-12 col-md-5 m-1">
         <h4>Comments</h4>
+        <Stagger in>
         {comments.map(comment => (
           <ul key={comment.id} className="list-unstyled">
             <li className="mb-2">{comment.comment}</li>
@@ -138,6 +145,7 @@ function RenderComments({ comments, postComment, dishId }) {
             </li>
           </ul>
         ))}
+        </Stagger>
         <CommentForm dishId={dishId} postComment={postComment} />
       </div>
     );
